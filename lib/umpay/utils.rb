@@ -12,14 +12,15 @@ module Umpay
         data.delete(:sign_type)
         data = params_to_sorted_string(data)
         rkey = OpenSSL::PKey::RSA.new key
-        sign= rkey.sign('sha1',data.force_encoding("utf-8"))
+        sign = rkey.sign('sha1',data.force_encoding("utf-8"))
         signature = Base64.encode64(sign)
         signature.gsub!("\n",'')
       end
       
       def rsa_encrypt(data, key) 
-        rsa=OpenSSL::PKey::RSA.new key
-        result = Base64.encode64(rsa.public_encrypt data)
+        key = OpenSSL::X509::Certificate.new key
+        rsa = OpenSSL::PKey::RSA.new key.public_key
+        result = Base64.encode64(rsa.public_encrypt data.force_encoding("gbk"))
         result.gsub!("\n",'')
       end
 
