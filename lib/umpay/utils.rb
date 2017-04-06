@@ -9,7 +9,6 @@ module Umpay
   class Utils
     class << self
       def rsa_sign(data, key)
-        data.delete(:sign_type)
         data = params_to_sorted_string(data)
         rkey = OpenSSL::PKey::RSA.new key
         sign = rkey.sign('sha1',data.force_encoding("utf-8"))
@@ -19,8 +18,8 @@ module Umpay
       
       def rsa_encrypt(data, key) 
         key = OpenSSL::X509::Certificate.new key
-        rsa = OpenSSL::PKey::RSA.new key.public_key
-        result = Base64.encode64(rsa.public_encrypt data.force_encoding("gbk"))
+        rkey = OpenSSL::PKey::RSA.new(key.public_key)
+        result = Base64.encode64(rkey.public_encrypt data.encode('gbk'))
         result.gsub!("\n",'')
       end
 
